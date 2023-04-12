@@ -13,6 +13,23 @@ app.get("/", (req, res) => {
   res.json({ msg: "hello" });
 });
 
+const URI = process.env.MONGODB_URL;
+mongoose.connect(URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Routes
+app.use("/api", require("./routes/authRouter"));
+
+mongoose.connection.on("open", () => {
+  console.log("Connected to mongodb");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.log("Mongoose connection error:", err);
+});
+
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log("Server is running on port", port);
