@@ -3,6 +3,8 @@ const authController = require("../controllers/authController");
 
 router.post("/register", authController.register);
 
+router.post("/active_email", authController.activeEmail);
+
 router.post("/login", authController.login);
 
 router.post("/logout", authController.logout);
