@@ -14,21 +14,30 @@ const oAuth2Client = new google.auth.OAuth2(
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
 const sendMail = async (email, url, username) => {
+  const mailHost = "smtp.gmail.com";
+  const mailPort = 587;
   try {
     const accessToken = await oAuth2Client.getAccessToken();
     const transport = nodemailer.createTransport({
-      service: "gmail",
+      // service: "gmail",
+      // auth: {
+      //   type: "OAuth2",
+      //   user: SENDER_MAIL, // email sender
+      //   pass: "uzgfuszitijmcpob",
+      //   clientId: CLIENT_ID,
+      //   clientSecret: CLIENT_SECRET,
+      //   refreshToken: REFRESH_TOKEN,
+      //   accessToken: accessToken,
+      // },
+      host: mailHost,
+      port: mailPort,
+      secure: false,
       auth: {
-        type: "OAuth2",
-        user: SENDER_MAIL, // email sender
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken: accessToken,
+        user: SENDER_MAIL,
+        pass: "uzgfuszitijmcpob",
       },
     });
 
-    console.log(email);
     const mailOptions = {
       from: SENDER_MAIL,
       to: email,

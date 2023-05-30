@@ -30,13 +30,13 @@ const userSchema = new mongoose.Schema(
       default:
         "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png",
     },
-    verifiedToken: { type: String, unique: true, trim: true },
     role: { type: String, default: "candidate" },
     gender: { type: String, default: "Male" },
     mobile: { type: String, default: "" },
     address: { type: String, default: "" },
     introduction: { type: String, default: "Something..." },
 
+    website: { type: String, default: "" },
     followers: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     following: [{ type: mongoose.Types.ObjectId, ref: "user" }],
 
