@@ -1,67 +1,72 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const cvSchema = new mongoose.Schema({
-
+const cvSchema = new mongoose.Schema(
+  {
     idCandidate: {
-        type: mongoose.Schema.ObjectId,
-        required: true
+      type: mongoose.Schema.ObjectId,
+      required: true,
     },
     //profile
     avatar: {
-        type: String
+      type: String,
     },
-    fullname: {
-        type: String,
-        default: ''
+    firstName: {
+      type: String,
+      default: "",
+    },
+    lastName: {
+      type: String,
+      default: "",
     },
     email: {
-        type: String,
+      type: String,
     },
     dateofBirth: {
-        type: Date
+      type: Date,
     },
     images: {
-        type: String
+      type: String,
     },
-    position: { //vi tri ung tuyen
-        type: String
+    position: {
+      //vi tri ung tuyen
+      type: String,
     },
     phoneNumber: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     address: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     descriptionProfile: {
-        type: String,
-        default: '',
-        maxlength: 200
-    },
- 
-    educations: {
-        type: Array
+      type: String,
+      default: "",
+      maxlength: 200,
     },
 
-  
+    educations: {
+      type: Array,
+    },
+
     experiences: {
-        type: Array
+      type: Array,
     },
     descriptionExperience: {
-        type: String,
-        default: '',
-        maxlength: 200
+      type: String,
+      default: "",
+      maxlength: 200,
     },
     skill: {
-        type: Array,
+      type: Array,
     },
     language: {
-        type: Array,
+      type: Array,
     },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-}, {
-    timestamps: true
-})
-
-module.exports = mongoose.model("cv", cvSchema)
+module.exports = mongoose.model("cv", cvSchema);

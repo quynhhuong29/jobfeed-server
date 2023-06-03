@@ -7,7 +7,7 @@ const userController = {
         username: { $regex: req.query.username },
       })
         .limit(10)
-        .select("fullName username avatar");
+        .select("firstName lastName username avatar");
 
       res.json({ users });
     } catch (err) {
@@ -29,8 +29,8 @@ const userController = {
     try {
       const {
         avatar,
-        firstname,
-        lastname,
+        firstName,
+        lastName,
         mobile,
         address,
         introduction,
@@ -38,9 +38,7 @@ const userController = {
         gender,
       } = req.body;
 
-      let fullName = firstname.trim() + " " + lastname.trim();
-
-      if (!fullName)
+      if (!firstName || !lastName)
         return res
           .status(400)
           .json({ msg: "Please add your firstName and lastName" });
@@ -49,7 +47,8 @@ const userController = {
         { _id: req.user._id },
         {
           avatar,
-          fullName,
+          firstName,
+          lastName,
           mobile,
           address,
           introduction,
@@ -65,7 +64,6 @@ const userController = {
   },
   follow: async (req, res) => {
     try {
-      console.log(req);
       const user = await Users.find({
         _id: req.params.id,
         followers: req.body.user._id,
@@ -73,46 +71,45 @@ const userController = {
       if (user.length > 0)
         return res.status(500).json({ msg: "You followed this user." });
 
-      await Users.findOneAndUpdate(
+      const newUser = await Users.findOneAndUpdate(
         { _id: req.params.id },
         {
           $push: { followers: req.body.user._id },
         },
         { new: true }
-      );
-
+      ).populate("followers following", "-password");
       await Users.findOneAndUpdate(
-        { _id: req.user._id },
+        { _id: req.body.user._id },
         {
           $push: { following: req.params.id },
         },
         { new: true }
       );
 
-      res.json({ msg: "Followed User. " });
+      res.json({ newUser });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   unfollow: async (req, res) => {
     try {
-      await Users.findOneAndUpdate(
+      const newUser = await Users.findOneAndUpdate(
         { _id: req.params.id },
         {
-          $pull: { followers: req.user._id },
+          $pull: { followers: req.body.user._id },
         },
         { new: true }
-      );
+      ).populate("followers following", "-password");
 
       await Users.findOneAndUpdate(
-        { _id: req.user._id },
+        { _id: req.body.user._id },
         {
           $pull: { following: req.params.id },
         },
         { new: true }
       );
 
-      res.json({ msg: "UnFollow User. " });
+      res.json({ newUser });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

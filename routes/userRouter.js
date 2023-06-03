@@ -3,8 +3,8 @@ const auth = require("../middleware/auth");
 const userController = require("../controllers/userController");
 
 // /search?username
-router.get("/search", userController.searchUser);
-router.get("/user/:id", userController.getUser);
+router.get("/search", auth, userController.searchUser);
+router.get("/user/:id", auth, userController.getUser);
 router.patch("/user", auth, userController.updateUser);
 
 router.patch("/user/:id/follow", auth, userController.follow);
