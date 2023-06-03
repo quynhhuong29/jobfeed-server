@@ -35,10 +35,6 @@ app.use(
 app.use(cookieParser());
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
-app.get("/", (req, res) => {
-  res.json({ msg: "hello" });
-});
-
 const URI = process.env.MONGODB_URL;
 mongoose.connect(URI, {
   useNewUrlParser: true,
@@ -47,6 +43,8 @@ mongoose.connect(URI, {
 
 // Routes
 app.use("/api", require("./routes/authRouter"));
+app.use("/api", require("./routes/userRouter"));
+app.use("/api", require("./routes/postRouter"));
 
 mongoose.connection.on("open", () => {
   console.log("Connected to mongodb");
