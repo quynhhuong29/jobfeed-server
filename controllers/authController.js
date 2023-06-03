@@ -1,4 +1,5 @@
 const Users = require("../models/userModel");
+const Company = require("../models/companyModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../helpers/emailHelper");
@@ -46,11 +47,6 @@ const authController = {
       res.json({
         message:
           "Register Successful! Please check your email to activate your account.",
-        // access_token,
-        // user: {
-        //   ...newUser._doc,
-        //   password: "",
-        // },
       });
     } catch (err) {
       return res.status(500).json({ message: err.message });
@@ -59,10 +55,6 @@ const authController = {
   activeEmail: async (req, res) => {
     try {
       const { verifiedToken } = req.body;
-      console.log(
-        "🚀 ~ file: authController.js:71 ~ activeEmail: ~ verifiedToken:",
-        verifiedToken
-      );
 
       const user = jwt.verify(verifiedToken, ACTIVE_TOKEN_SECRET);
 
@@ -122,7 +114,7 @@ const authController = {
       res.json({
         access_token,
         user: {
-          ...user._doc,
+          ...user?._doc,
           password: "",
         },
       });
@@ -170,7 +162,7 @@ const authController = {
       const access_token = createAccessToken({ id: user._id });
       const url = `${CLIENT_URL}/reset/${access_token}`;
 
-      sendMail(email, url, user);
+      sendMail(email, url, user.username);
       res.json({ msg: "Re-send the password, please check your email." });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -208,6 +200,7 @@ const authController = {
         contactName,
         phone,
       } = req.body;
+
       let user_name = companyName.toLowerCase().replace(/ /g, "");
       const company_email = await Users.findOne({ email: email });
 
@@ -233,7 +226,7 @@ const authController = {
         contactName,
         phone,
         password: passwordHash,
-        firstName: "",
+        firstName: companyName,
         lastName: companyName,
       });
       const newCompany = new Company({
@@ -251,8 +244,12 @@ const authController = {
         ...newCompany._doc,
         ...newUser._doc,
       });
-      const url = `${CLIENT_URL}/verify?verifiedToken=${verifyToken}`;
-      sendMail(email, url, newUser);
+      const url = `${CLIENT_URL}/verify?verifiedToken=${activation_token}`;
+      sendMail(email, url, newUser.username);
+      console.log(
+        "🚀 ~ file: authController.js:256 ~ companyRegister: ~ url:",
+        url
+      );
       res.json({
         msg: "Register Success! Please activate your email to start.",
       });
@@ -304,7 +301,7 @@ const authController = {
       const { activation_token } = req.body;
       const user = jwt.verify(
         activation_token,
-        process.env.ACTIVATION_TOKEN_SECRET
+        process.env.ACTIVE_TOKEN_SECRET
       );
 
       const {
