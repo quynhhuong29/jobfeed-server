@@ -15,7 +15,7 @@ const jobSchema = new mongoose.Schema(
     },
     level: {
       type: String,
-      enum: ["Interns", "Fresher", "Experienced"],
+      enum: ["Interns", "Fresher", "Experienced", "Senior"],
       default: "Interns",
     },
     jobType: {
@@ -84,5 +84,15 @@ const jobSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// jobSchema.pre("save", function (next) {
+//   if (this.startDate && typeof this.startDate === "string") {
+//     this.startDate = new Date(this.startDate);
+//   }
+//   if (this.endDate && typeof this.endDate === "string") {
+//     this.endDate = new Date(this.endDate);
+//   }
+//   next();
+// });
 
 module.exports = mongoose.model("job", jobSchema);

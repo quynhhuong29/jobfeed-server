@@ -142,6 +142,18 @@ const authController = {
           .select("-password")
           .populate("followers following", "-password");
 
+        if (user.role === "company") {
+          const company = await Company.findOne({ idCompany: user._id });
+          if (!user)
+            return res.status(400).json({ msg: "This does not exist." });
+
+          const access_token = createAccessToken({ id: result.id });
+          return res.json({
+            access_token,
+            user: { ...user._doc, company },
+          });
+        }
+
         if (!user) return res.status(400).json({ message: "User not found" });
 
         const access_token = createAccessToken({ id: result.id });
@@ -246,10 +258,6 @@ const authController = {
       });
       const url = `${CLIENT_URL}/verify?verifiedToken=${activation_token}`;
       sendMail(email, url, newUser.username);
-      console.log(
-        "🚀 ~ file: authController.js:256 ~ companyRegister: ~ url:",
-        url
-      );
       res.json({
         msg: "Register Success! Please activate your email to start.",
       });
