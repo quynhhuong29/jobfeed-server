@@ -45,6 +45,8 @@ mongoose.connect(URI, {
 app.use("/api", require("./routes/authRouter"));
 app.use("/api", require("./routes/userRouter"));
 app.use("/api", require("./routes/postRouter"));
+app.use("/api", require("./routes/jobRouter"));
+app.use("", require("./routes/messageRouter"));
 
 mongoose.connection.on("open", () => {
   console.log("Connected to mongodb");

@@ -26,25 +26,55 @@ const jobController = {
       endDate,
       experience,
     } = req.body;
-    if (
-      !companyName ||
-      !position ||
-      !level ||
-      !jobType ||
-      !industry ||
-      !address ||
-      !description ||
-      !requirement ||
-      !skill ||
-      !minSalary ||
-      !maxSalary ||
-      !companySize ||
-      !infoCompany
-    ) {
-      return res.json({ msg: "Missing pramater" });
+    const listMissing = [];
+    if (!companyName) {
+      listMissing.push("companyName");
+    }
+    if (!position) {
+      listMissing.push("position");
+    }
+    if (!level) {
+      listMissing.push("level");
+    }
+    if (!jobType) {
+      listMissing.push("jobType");
+    }
+    if (!industry) {
+      listMissing.push("industry");
+    }
+    if (!address) {
+      listMissing.push("address");
+    }
+    if (!description) {
+      listMissing.push("description");
+    }
+    if (!requirement) {
+      listMissing.push("requirement");
+    }
+    if (!skill) {
+      listMissing.push("skill");
+    }
+    if (!minSalary) {
+      listMissing.push("minSalary");
+    }
+    if (!maxSalary) {
+      listMissing.push("maxSalary");
+    }
+    if (!companySize) {
+      listMissing.push("companySize");
+    }
+    if (!infoCompany) {
+      listMissing.push("infoCompany");
+    }
+
+    if (listMissing.length > 0) {
+      return res.json({
+        msg: `Missing parameter(s): ${listMissing.join(", ")}`,
+      });
     }
 
     const newJob = new Job({
+      // idCompany: req.params.idCompany,
       idCompany: req.user._id,
       companyName,
       position,
@@ -62,6 +92,7 @@ const jobController = {
       benefit,
       minSalary,
       maxSalary,
+      startDate,
       endDate,
       experience,
     });
@@ -133,7 +164,6 @@ const jobController = {
         endDate,
         experience,
       } = req.body;
-      console.log(skill);
       const newJob = await Job.findOneAndUpdate(
         { _id: id },
         {
@@ -168,7 +198,7 @@ const jobController = {
   },
   deleteJob: async (req, res) => {
     try {
-      const { id } = req.body;
+      const { id } = req.params;
       await Job.findOneAndDelete({ _id: id });
       return res.json({ msg: "Delete success!" });
     } catch (err) {

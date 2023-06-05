@@ -177,7 +177,7 @@ const postController = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  getPost: async (req, res) => {
+  getPostById: async (req, res) => {
     try {
       const post = await Posts.findById(req.params.id)
         .populate(
