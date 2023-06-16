@@ -80,7 +80,7 @@ const userController = {
     try {
       const user = await Users.find({
         _id: req.params.id,
-        followers: req.body.user._id,
+        followers: req.body._id,
       });
       if (user.length > 0)
         return res.status(500).json({ msg: "You followed this user." });
@@ -88,12 +88,12 @@ const userController = {
       const newUser = await Users.findOneAndUpdate(
         { _id: req.params.id },
         {
-          $push: { followers: req.body.user._id },
+          $push: { followers: req.body._id },
         },
         { new: true }
       ).populate("followers following", "-password");
       await Users.findOneAndUpdate(
-        { _id: req.body.user._id },
+        { _id: req.body._id },
         {
           $push: { following: req.params.id },
         },
@@ -110,13 +110,13 @@ const userController = {
       const newUser = await Users.findOneAndUpdate(
         { _id: req.params.id },
         {
-          $pull: { followers: req.body.user._id },
+          $pull: { followers: req.body._id },
         },
         { new: true }
       ).populate("followers following", "-password");
 
       await Users.findOneAndUpdate(
-        { _id: req.body.user._id },
+        { _id: req.body._id },
         {
           $pull: { following: req.params.id },
         },

@@ -4,7 +4,7 @@ const authAdmin = require("../middleware/authAdmin");
 const userController = require("../controllers/userController");
 
 // /search?username
-router.get("/search", auth, userController.searchUser);
+router.get("/search", userController.searchUser);
 router.get("/user/:id", auth, userController.getUser);
 router.patch("/user", auth, userController.updateUser);
 

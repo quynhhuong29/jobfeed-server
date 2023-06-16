@@ -23,7 +23,9 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
     "nodemailer": "^6.9.1",
+    "peer": "^1.0.0",
     "rand-token": "^1.0.1",
+    "socket.io": "^4.6.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.2"
   },
