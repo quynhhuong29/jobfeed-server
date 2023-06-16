@@ -145,7 +145,7 @@ const authController = {
         if (user.role === "company") {
           const company = await Company.findOne({ idCompany: user._id });
           if (!user)
-            return res.status(400).json({ msg: "This does not exist." });
+            return res.status(400).json({ message: "This does not exist." });
 
           const access_token = createAccessToken({ id: result.id });
           return res.json({
@@ -169,15 +169,15 @@ const authController = {
       const { email } = req.body;
       const user = await Users.findOne({ email });
       if (!user)
-        return res.status(400).json({ msg: "This email does not exist." });
+        return res.status(400).json({ message: "This email does not exist." });
 
       const access_token = createAccessToken({ id: user._id });
       const url = `${CLIENT_URL}/reset/${access_token}`;
 
       sendMail(email, url, user.username);
-      res.json({ msg: "Re-send the password, please check your email." });
+      res.json({ message: "Re-send the password, please check your email." });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
   resetPassword: async (req, res) => {
@@ -193,9 +193,9 @@ const authController = {
         }
       );
 
-      res.json({ msg: "Password successfully changed!" });
+      res.json({ message: "Password successfully changed!" });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
 
@@ -217,12 +217,13 @@ const authController = {
       const company_email = await Users.findOne({ email: email });
 
       //check email
-      if (company_email) return res.json({ msg: "This email already exists." });
+      if (company_email)
+        return res.json({ message: "This email already exists." });
       //check password
       if (password.length < 6)
         return res
           .status(400)
-          .json({ msg: "Password must be at least 6 characters." });
+          .json({ message: "Password must be at least 6 characters." });
 
       const passwordHash = await bcrypt.hash(password, 12);
 
@@ -259,7 +260,7 @@ const authController = {
       const url = `${CLIENT_URL}/verify?verifiedToken=${activation_token}`;
       sendMail(email, url, newUser.username);
       res.json({
-        msg: "Register Success! Please activate your email to start.",
+        message: "Register Success! Please activate your email to start.",
       });
     } catch (error) {
       return res.json(error.message);
@@ -274,11 +275,11 @@ const authController = {
       );
 
       if (!users)
-        return res.status(400).json({ msg: "This email does not exist." });
+        return res.status(400).json({ message: "This email does not exist." });
 
       const isMatch = await bcrypt.compare(password, users.password);
       if (!isMatch)
-        return res.status(400).json({ msg: "Password is incorrect." });
+        return res.status(400).json({ message: "Password is incorrect." });
 
       const company = await Company.findOne({ idCompany: users._id });
 
@@ -292,7 +293,7 @@ const authController = {
       });
 
       res.json({
-        msg: "Login Success!",
+        message: "Login Success!",
         access_token,
         user: {
           ...users._doc,
@@ -329,7 +330,7 @@ const authController = {
       } = user;
       const check = await Users.findOne({ email });
       if (check)
-        return res.status(400).json({ msg: "This email already exists." });
+        return res.status(400).json({ message: "This email already exists." });
 
       const newUser = new Users({
         firstName,
@@ -352,9 +353,9 @@ const authController = {
       });
       await newCompany.save();
 
-      res.json({ msg: "Account has been activated!" });
+      res.json({ message: "Account has been activated!" });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
   changePassword: async (req, res) => {
@@ -372,14 +373,14 @@ const authController = {
       const isMatch = await bcrypt.compare(current_password, user.password);
 
       if (!isMatch)
-        return res.status(400).json({ msg: "Password is incorrect." });
+        return res.status(400).json({ message: "Password is incorrect." });
 
       const passwordHash = await bcrypt.hash(new_password, 12);
       await Users.findOneAndUpdate({ _id: userId }, { password: passwordHash });
 
       return res.json({ success: "Change success" });
     } catch (error) {
-      return res.json({ msg: "Change fail!" });
+      return res.json({ message: "Change fail!" });
     }
   },
 };
