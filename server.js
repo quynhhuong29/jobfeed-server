@@ -48,6 +48,7 @@ const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
 io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
   SocketServer(socket);
 });
 
@@ -78,6 +79,6 @@ mongoose.connection.on("error", (err) => {
 });
 
 const port = process.env.PORT || 5001;
-app.listen(port, () => {
+http.listen(port, () => {
   console.log("Server is running on port", port);
 });

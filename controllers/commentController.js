@@ -8,12 +8,14 @@ const commentController = {
 
       const post = await Posts.findById(postId);
       if (!post)
-        return res.status(400).json({ msg: "This post does not exist." });
+        return res.status(400).json({ message: "This post does not exist." });
 
       if (reply) {
         const cm = await Comments.findById(reply);
         if (!cm)
-          return res.status(400).json({ msg: "This comment does not exist." });
+          return res
+            .status(400)
+            .json({ message: "This comment does not exist." });
       }
 
       const newComment = new Comments({
@@ -37,7 +39,7 @@ const commentController = {
 
       res.json({ newComment });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
   updateComment: async (req, res) => {
@@ -52,9 +54,9 @@ const commentController = {
         { content }
       );
 
-      res.json({ msg: "Update Success!" });
+      res.json({ message: "Update Success!" });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
   likeComment: async (req, res) => {
@@ -64,7 +66,7 @@ const commentController = {
         likes: req.user._id,
       });
       if (comment.length > 0)
-        return res.status(400).json({ msg: "You liked this post." });
+        return res.status(400).json({ message: "You liked this post." });
 
       await Comments.findOneAndUpdate(
         { _id: req.params.id },
@@ -74,9 +76,9 @@ const commentController = {
         { new: true }
       );
 
-      res.json({ msg: "Liked Comment!" });
+      res.json({ message: "Liked Comment!" });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
   unLikeComment: async (req, res) => {
@@ -89,9 +91,9 @@ const commentController = {
         { new: true }
       );
 
-      res.json({ msg: "UnLiked Comment!" });
+      res.json({ message: "UnLiked Comment!" });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
   deleteComment: async (req, res) => {
@@ -108,9 +110,9 @@ const commentController = {
         }
       );
 
-      res.json({ msg: "Deleted Comment!" });
+      res.json({ message: "Deleted Comment!" });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
 };
