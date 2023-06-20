@@ -92,8 +92,10 @@ const jobPostController = {
     try {
       const { id } = req.params;
       const company = await Company.findOne({ idCompany: id });
+
       const jobs = await JobPost.find({ company_info: company._id })
         .populate("industry", "title description")
+        .populate("company_info", "_id companyName logo address")
         .sort("-createdAt");
       return res.json(jobs);
     } catch (error) {
@@ -102,7 +104,9 @@ const jobPostController = {
   },
   deleteJob: async (req, res) => {
     try {
-      const { id } = req.body;
+      const { id } = req.params;
+      if (!id) return res.status(400).json({ msg: "Missing id" });
+
       await JobPost.findOneAndDelete({ _id: id });
       return res.json({ msg: "Delete success!" });
     } catch (error) {
@@ -124,6 +128,7 @@ const jobPostController = {
     }
   },
   updateJobPost: async (req, res) => {
+    if (!req.body.id) return res.status(400).json({ msg: "Missing id" });
     try {
       const {
         id,
@@ -132,12 +137,40 @@ const jobPostController = {
         job_requirement,
         job_title,
         expiring_date,
+        contact_name,
+        contact_phone,
+        contact_address,
+        contact_email,
+        experience,
+        industry,
+        working_location,
+        address,
+        employment_type,
+        level,
+        salary,
       } = req.body;
       await JobPost.findOneAndUpdate(
         { _id: id },
-        { benefit, job_description, job_requirement, job_title, expiring_date }
+        {
+          benefit,
+          job_description,
+          job_requirement,
+          job_title,
+          expiring_date,
+          contact_name,
+          contact_phone,
+          contact_address,
+          contact_email,
+          experience,
+          industry,
+          working_location,
+          address,
+          employment_type,
+          level,
+          salary,
+        }
       );
-      return res.json({ msg: "Update success!" });
+      return res.status(200).json({ msg: "Update success!" });
     } catch (error) {
       return res.json({ msg: error.msg });
     }

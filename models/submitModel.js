@@ -1,19 +1,23 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const submitSchema = new mongoose.Schema({
+const submitSchema = new mongoose.Schema(
+  {
     idJob: {
-        type: mongoose.Schema.ObjectId, ref: 'jobPost',
-        required: true
+      type: mongoose.Schema.ObjectId,
+      ref: "jobPost",
+      required: true,
     },
     cv: {
-        type: Array
+      type: Array,
     },
     idCompany: {
-        type: mongoose.Schema.ObjectId,
-        required: true
-    }
-}, {
-    timestamps: true
-})
+      type: mongoose.Schema.ObjectId,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model("submit", submitSchema)
+module.exports = mongoose.model("submit", submitSchema);

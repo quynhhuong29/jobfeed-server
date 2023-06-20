@@ -17,14 +17,32 @@ const caculatePoint = (dataJob, dataCV) => {
 const submitController = {
   submit: async (req, res) => {
     try {
-      const { idJob, idCompany, idCV, dataCV, dateSubmit, resumeFile } =
-        req.body;
-      const job = await JobPost.findOne({ _id: idJob });
+      const {
+        idJob,
+        idCompany,
+        idCV,
+        dataCV,
+        dateSubmit,
+        resumeFile,
+        name,
+        email,
+        phone,
+      } = req.body;
       const oldSubmit = await submit.findOne({ idJob });
+
+      if (
+        !oldSubmit.cv.filter(
+          (element) => element.idCandidate === req.user._id
+        )[0]
+      ) {
+        return res
+          .status(400)
+          .json({ msg: "Your CV has been submitted this job" });
+      }
       if (oldSubmit) {
-        const arr = oldSubmit.cv.filter((element) => element.idCV === idCV);
-        if (!arr[0]) {
-          if (!resumeFile) {
+        if (!resumeFile) {
+          const arr = oldSubmit.cv.filter((element) => element.idCV === idCV);
+          if (!arr[0]) {
             await submit.findOneAndUpdate(
               { idJob },
               {
@@ -45,27 +63,29 @@ const submitController = {
               msg: "submit success!",
             });
           } else {
-            await submit.findOneAndUpdate(
-              { idJob },
-              {
-                $push: {
-                  cv: {
-                    idCandidate: req.user._id,
-                    dateSubmit: dateSubmit,
-                    status: "Waiting",
-                    resumeFile: resumeFile,
-                  },
-                },
-              }
-            );
-
-            return res.status(200).json({
-              newSubmit: { idCompany, idCV, idJob },
-              msg: "submit success!",
-            });
+            return res.status(400).json({ msg: "Your CV has been submitted" });
           }
         } else {
-          return res.status(400).json({ msg: "Your CV has been submitted" });
+          await submit.findOneAndUpdate(
+            { idJob },
+            {
+              $push: {
+                cv: {
+                  idCandidate: req.user._id,
+                  dateSubmit: dateSubmit,
+                  status: "Waiting",
+                  resumeFile: resumeFile,
+                  name,
+                  email,
+                  phone,
+                },
+              },
+            }
+          );
+          return res.status(200).json({
+            newSubmit: { idCompany, idCV, idJob },
+            msg: "submit success!",
+          });
         }
       }
 
@@ -78,6 +98,9 @@ const submitController = {
             dateSubmit: dateSubmit,
             status: "Waiting",
             resumeFile: resumeFile,
+            name,
+            email,
+            phone,
           },
         });
         await newSubmit.save();
@@ -148,14 +171,29 @@ const submitController = {
   },
   setStatus: async (req, res) => {
     try {
-      const { idJob, idCV, status, idCandidate } = req.body;
-      await submit.updateOne(
-        { idJob: idJob, cv: { $elemMatch: { idCV: idCV } } },
-        {
-          $set: { "cv.$.status": status },
-        }
-      );
-      return res.json({ msg: "Success", status, idCandidate, idJob });
+      const { idJob, idCV, status, idCandidate, resumeFile } = req.body;
+
+      if ((!idCV || !resumeFile) && !idJob) {
+        return res.status(400).json({ msg: "Missing data" });
+      }
+
+      if (resumeFile) {
+        await submit.updateOne(
+          { idJob: idJob, cv: { $elemMatch: { resumeFile: resumeFile } } },
+          {
+            $set: { "cv.$.status": status },
+          }
+        );
+        return res.json({ msg: "Success", status, idCandidate, idJob });
+      } else {
+        await submit.updateOne(
+          { idJob: idJob, cv: { $elemMatch: { idCV: idCV } } },
+          {
+            $set: { "cv.$.status": status },
+          }
+        );
+        return res.json({ msg: "Success", status, idCandidate, idJob });
+      }
     } catch (err) {
       return res.json({ msg: err.message });
     }
