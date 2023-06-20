@@ -6,10 +6,10 @@ const JobPost = require("../models/jobPostModel");
 const companyController = {
   getInfoCompany: async (req, res) => {
     try {
-      const company = await Company.find({ idCompany: req.user._id });
-      return res.json(company);
+      const company = await Company.find({ idCompany: req.params.id });
+      return res.status(200).json(company);
     } catch (err) {
-      return res.json({ msg: err.message });
+      return res.status(500).json({ msg: err.message });
     }
   },
   getAllCompany: async (req, res) => {
@@ -113,10 +113,11 @@ const companyController = {
   },
   updateCompany: async (req, res) => {
     try {
-      const { industry, website, info, city, address, contactName } = req.body;
+      const { industry, website, info, city, address, contactName, logo } =
+        req.body;
       await Company.findOneAndUpdate(
         { idCompany: req.user._id },
-        { industry, website, info, city, address, contactName }
+        { industry, website, info, city, address, contactName, logo }
       );
       return res.json({ msg: "Update success!" });
     } catch (error) {

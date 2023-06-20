@@ -5,47 +5,43 @@ const resumeController = {
     try {
       const {
         title,
-        first_name,
-        last_name,
+        firstName,
+        lastName,
         phone,
-        birth_day,
+        DOB,
         country,
         language,
         email,
         city,
         address,
         overview,
-        work_experience,
+        workExperience,
         skill,
         education,
         hobbies,
         avatar,
-        facebook,
-        github,
-        twitter,
+        linkedin,
         tags,
       } = req.body;
       const newResume = new Resume({
         title,
-        first_name,
-        last_name,
+        firstName,
+        lastName,
         phone,
-        birth_day,
+        DOB,
         country,
         language,
         email,
         city,
         address,
         overview,
-        work_experience,
+        workExperience,
         skill,
         education,
         hobbies,
         avatar,
         idCandidate: req.user._id,
-        facebook,
-        github,
-        twitter,
+        linkedin,
         tags,
       });
       await newResume.save();
@@ -94,6 +90,37 @@ const resumeController = {
         tags: { $elemMatch: { $regex: tag, $options: "i" } },
       });
       return res.json(resumes);
+    } catch (error) {
+      return res.json({ msg: error.msg });
+    }
+  },
+  uploadResumeFile: async (req, res) => {
+    try {
+      const resume = await Resume.findOne({ idCandidate: req.user._id });
+      if (!req.body.file) {
+        return res.status(400).json({ msg: "No file provided" });
+      }
+
+      if (!resume) {
+        const newResume = new Resume({
+          resumeFile: req.body.file,
+          idCandidate: req.user._id,
+        });
+        await newResume.save();
+        return res.json({ msg: "File uploaded successfully" });
+      } else {
+        resume.resumeFile = req.body.file;
+        await resume.save();
+        return res.json({ msg: "File uploaded successfully" });
+      }
+    } catch (error) {
+      return res.json({ msg: error.msg });
+    }
+  },
+  getFileResume: async (req, res) => {
+    try {
+      const resume = await Resume.findOne({ idCandidate: req.user._id });
+      return res.status(200).json({ file: resume.resumeFile });
     } catch (error) {
       return res.json({ msg: error.msg });
     }

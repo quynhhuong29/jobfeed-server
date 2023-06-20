@@ -1,81 +1,82 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const ResumeSchema = new mongoose.Schema({
+const ResumeSchema = new mongoose.Schema(
+  {
     idCandidate: {
-        type: mongoose.Types.ObjectId, ref: 'user'
+      type: mongoose.Types.ObjectId,
+      ref: "user",
     },
     title: {
-        type: String,
-        required: true
+      type: String,
+      //   required: true,
     },
-    first_name: {
-        type: String,
-        required: true
+    firstName: {
+      type: String,
+      //   required: true,
     },
-    last_name: {
-        type: String,
-        required: true
+    lastName: {
+      type: String,
+      //   required: true,
     },
     phone: {
-        type: String,
-        required: true
+      type: String,
+      //   required: true,
     },
-    birth_day: {
-        type: String,
-        required: true
+    DOB: {
+      type: String,
+      //   required: true,
     },
     country: {
-        type: String,
-        required: true
+      type: String,
+      //   required: true,
     },
     email: {
-        type: String,
-        required: true
+      type: String,
+      //   required: true,
     },
     city: {
-        type: String,
-        required: true
+      type: String,
+      //   required: true,
     },
     address: {
-        type: String,
-        required: true
+      type: String,
+      //   required: true,
     },
     overview: {
-        type: String,
-        required: true
+      type: String,
+      //   required: true,
     },
-    work_experience: {
-        type: []
+    workExperience: {
+      type: [],
     },
     skill: {
-        type: []
+      type: [],
     },
     education: {
-        type: {}
+      type: {},
     },
     language: {
-        type: []
+      type: [],
     },
     hobbies: {
-        type: String
+      type: String,
     },
     avatar: {
-        type: String
+      type: String,
     },
-    github: {
-        type: String
-    },
-    facebook: {
-        type: String
-    },
-    twitter: {
-        type: String
+    linkedin: {
+      type: String,
     },
     tags: {
-        type: []
-    }
-}, {
-    timestamps: true
-})
+      type: [],
+    },
+    resumeFile: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('resume', ResumeSchema)
+module.exports = mongoose.model("resume", ResumeSchema);

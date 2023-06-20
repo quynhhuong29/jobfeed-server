@@ -26,7 +26,8 @@ const jobPostController = {
         company_id,
         idUser,
       } = req.body;
-      if (!company_id) return res.status(500).json({ msg: "Create fail" });
+      if (!company_id)
+        return res.status(400).json({ msg: "Missing id company" });
 
       const newJob = new JobPost({
         job_title,
@@ -61,10 +62,13 @@ const jobPostController = {
   getAllJob: async (req, res) => {
     try {
       const { page, limit } = req.query;
+      const currentDate = new Date().toISOString();
       if (page && limit) {
         let skip = (page - 1) * limit;
-        const totalJob = await JobPost.find({});
-        const jobs = await JobPost.find({})
+        const totalJob = await JobPost.find({
+          expiring_date: { $gt: currentDate },
+        });
+        const jobs = await JobPost.find({ expiring_date: { $gt: currentDate } })
           .populate(
             "company_info",
             "_id companyName logo address working_location"
@@ -72,12 +76,12 @@ const jobPostController = {
           .sort("-createdAt")
           .limit(Number(limit))
           .skip(skip);
+
         return res.json({ jobs, total: totalJob.length });
       } else {
-        const jobs = await JobPost.find({}).populate(
-          "company_info",
-          "_id companyName logo address"
-        );
+        const jobs = await JobPost.find({
+          expiring_date: { $gt: currentDate },
+        }).populate("company_info", "_id companyName logo address");
         return res.json({ jobs, total: jobs.length });
       }
     } catch (error) {
@@ -110,7 +114,10 @@ const jobPostController = {
       const { id } = req.params;
       const job = await JobPost.findOne({ _id: id })
         .populate("industry", "title description")
-        .populate("company_info", "_id companyName logo address");
+        .populate(
+          "company_info",
+          "_id companyName logo address idCompany website phone email"
+        );
       return res.json(job);
     } catch (error) {
       return res.json({ msg: error.msg });

@@ -1,67 +1,73 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-
-const companySchema = new mongoose.Schema({
+const companySchema = new mongoose.Schema(
+  {
     idCompany: {
-        type: mongoose.Schema.ObjectId,
-        required: true,
-        unique: true
+      type: mongoose.Schema.ObjectId,
+      required: true,
+      unique: true,
     },
     companyName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     address: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     city: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     contactName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     industry: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     info: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     size: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     logo: {
-        type: String,
-        default: 'https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png'
+      type: String,
+      default:
+        "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png",
     },
     images: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     website: {
-        type: String,
-        default: ''
+      type: String,
+      default: "",
     },
     phone: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     role: {
-        type: String,
-        default: "company"
+      type: String,
+      default: "company",
     },
     taxCode: {
-        type: String,
-        default: "123456789"
-    }
-}, {
-    timestamps: true
-})
+      type: String,
+      default: "123456789",
+    },
+    email: {
+      type: String,
+      default: "",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-
-module.exports = mongoose.model('company', companySchema)
+module.exports = mongoose.model("company", companySchema);

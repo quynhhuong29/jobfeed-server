@@ -17,57 +17,94 @@ const caculatePoint = (dataJob, dataCV) => {
 const submitController = {
   submit: async (req, res) => {
     try {
-      const { idJob, idCompany, idCV, dataCV, dateSubmit } = req.body;
+      const { idJob, idCompany, idCV, dataCV, dateSubmit, resumeFile } =
+        req.body;
       const job = await JobPost.findOne({ _id: idJob });
       const oldSubmit = await submit.findOne({ idJob });
       if (oldSubmit) {
         const arr = oldSubmit.cv.filter((element) => element.idCV === idCV);
         if (!arr[0]) {
-          await submit.findOneAndUpdate(
-            { idJob },
-            {
-              $push: {
-                cv: {
-                  idCV: idCV,
-                  idCandidate: req.user._id,
-                  dateSubmit: dateSubmit,
-                  status: "Waiting",
-                  dataCV: dataCV,
-                  // 'fullname': req.user.firstname + ' ' + req.user.lastname, 'point': caculatePoint(job.skill, dataCV.skill)
+          if (!resumeFile) {
+            await submit.findOneAndUpdate(
+              { idJob },
+              {
+                $push: {
+                  cv: {
+                    idCV: idCV,
+                    idCandidate: req.user._id,
+                    dateSubmit: dateSubmit,
+                    status: "Waiting",
+                    dataCV: dataCV,
+                  },
                 },
-              },
-            }
-          );
+              }
+            );
 
-          return res.json({
-            newSubmit: { idCompany, idCV, idJob },
-            msg: "submit success!",
-          });
+            return res.status(200).json({
+              newSubmit: { idCompany, idCV, idJob },
+              msg: "submit success!",
+            });
+          } else {
+            await submit.findOneAndUpdate(
+              { idJob },
+              {
+                $push: {
+                  cv: {
+                    idCandidate: req.user._id,
+                    dateSubmit: dateSubmit,
+                    status: "Waiting",
+                    resumeFile: resumeFile,
+                  },
+                },
+              }
+            );
+
+            return res.status(200).json({
+              newSubmit: { idCompany, idCV, idJob },
+              msg: "submit success!",
+            });
+          }
         } else {
-          return res.json({ msg: "Your CV has been submitted" });
+          return res.status(400).json({ msg: "Your CV has been submitted" });
         }
       }
 
-      const newSubmit = new submit({
-        idJob,
-        idCompany,
-        cv: {
-          idCV: idCV,
-          idCandidate: req.user._id,
-          dateSubmit: dateSubmit,
-          status: "Waiting",
-          dataCV: dataCV,
-          // , 'fullname': req.user.firstname + ' ' + req.user.lastname,
-          // 'dataCV': dataCV, 'point': caculatePoint(job.skill, dataCV.skill)
-        },
-      });
-      await newSubmit.save();
-      return res.json({
-        newSubmit: { ...newSubmit._doc, user: req.user },
-        msg: "submit success!",
-      });
+      if (resumeFile) {
+        const newSubmit = new submit({
+          idJob,
+          idCompany,
+          cv: {
+            idCandidate: req.user._id,
+            dateSubmit: dateSubmit,
+            status: "Waiting",
+            resumeFile: resumeFile,
+          },
+        });
+        await newSubmit.save();
+        return res.status(200).json({
+          newSubmit: { ...newSubmit._doc, user: req.user },
+          msg: "submit success!",
+        });
+      } else {
+        const newSubmit = new submit({
+          idJob,
+          idCompany,
+          cv: {
+            idCV: idCV,
+            idCandidate: req.user._id,
+            dateSubmit: dateSubmit,
+            status: "Waiting",
+            dataCV: dataCV,
+          },
+        });
+        await newSubmit.save();
+        return res.status(200).json({
+          newSubmit: { ...newSubmit._doc, user: req.user },
+          msg: "submit success!",
+        });
+      }
     } catch (err) {
-      return res.json({ msg: err.message });
+      return res.status(500).json({ msg: err.message });
     }
   },
   getSubmitted: async (req, res) => {

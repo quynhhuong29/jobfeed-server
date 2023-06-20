@@ -33,7 +33,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:3005",
-      "https://jobvia.vercel.app/",
+      "https://jobvia.vercel.app",
     ],
     credentials: true,
   })
@@ -49,7 +49,13 @@ mongoose.connect(URI, {
 
 // Socket
 const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+const io = require("socket.io")(http, {
+  cors: {
+    origin: ["http://localhost:3000", "http://localhost:3005"],
+    allowedHeaders: ["*"],
+    credentials: true,
+  },
+});
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
@@ -73,6 +79,8 @@ app.use("/api", require("./routes/notifyRouter"));
 app.use("/api/jobPost", require("./routes/jobPostRouter"));
 app.use("/api", require("./routes/resumeRouter"));
 app.use("/api", require("./routes/submitRouter"));
+
+app.use("/resumes", express.static("resumes"));
 
 mongoose.connection.on("open", () => {
   console.log("Connected to mongodb");

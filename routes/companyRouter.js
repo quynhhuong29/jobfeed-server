@@ -4,14 +4,14 @@ const companyController = require("../controllers/companyController");
 const authCompany = require("../middleware/authCompany");
 const authAdmin = require("../middleware/authAdmin");
 
-router.get("/getInfoCompany", companyController.getInfoCompany);
+router.get("/getInfoCompany/:id", auth, companyController.getInfoCompany);
 router.get("/getTopCompany", companyController.getTopCompany);
-router.get(
-  "/getInfoCompany:id",
-  auth,
-  authCompany,
-  companyController.getInfomationCompany
-);
+// router.get(
+//   "/getInfoCompany:id",
+//   auth,
+//   authCompany,
+//   companyController.getInfomationCompany
+// );
 router.get("/getAllCompany", companyController.getAllCompany);
 router.post("/getCompanyByIndustry", companyController.getCompanyByIndustry);
 router.patch(

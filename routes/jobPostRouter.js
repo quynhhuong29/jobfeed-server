@@ -3,7 +3,7 @@ const jobPostController = require("../controllers/jobPostController");
 const auth = require("../middleware/auth");
 
 router.post("/createJob", jobPostController.createJob);
-router.post("/getAllJob", jobPostController.getAllJob);
+router.get("/getAllJob", jobPostController.getAllJob);
 router.get("/getJob/:id", jobPostController.getJobById);
 router.post("/deleteJob", jobPostController.deleteJob);
 router.post("/getJobsByCompany/:id", jobPostController.getJobsByCompany);

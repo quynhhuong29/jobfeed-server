@@ -57,32 +57,80 @@ const authController = {
       const { verifiedToken } = req.body;
 
       const user = jwt.verify(verifiedToken, ACTIVE_TOKEN_SECRET);
+      if (user.role === "candidate") {
+        const { firstName, lastName, username, email, password, role } = user;
 
-      const { firstName, lastName, username, email, password, role } = user;
+        const isExistUsername = await Users.findOne({ username });
+        if (isExistUsername) {
+          return res
+            .status(400)
+            .json({ message: "This username already exist. " });
+        }
 
-      const isExistUsername = await Users.findOne({ username });
-      if (isExistUsername) {
-        return res
-          .status(400)
-          .json({ message: "This username already exist. " });
+        const isExistEmail = await Users.findOne({ email });
+        if (isExistEmail) {
+          return res
+            .status(400)
+            .json({ message: "This email already exist. " });
+        }
+
+        const newUser = new Users({
+          firstName,
+          lastName,
+          username,
+          email,
+          password,
+          role,
+        });
+        await newUser.save();
+        res.json({ message: "Active Successful!" });
       }
+      if (user.role === "company") {
+        const {
+          firstName,
+          lastName,
+          email,
+          username,
+          role,
+          password,
+          companyName,
+          size,
+          city,
+          address,
+          info,
+          contactName,
+          phone,
+        } = user;
+        const check = await Users.findOne({ email });
+        if (check)
+          return res
+            .status(400)
+            .json({ message: "This email already exists." });
 
-      const isExistEmail = await Users.findOne({ email });
-      if (isExistEmail) {
-        return res.status(400).json({ message: "This email already exist. " });
+        const newUser = new Users({
+          firstName,
+          lastName,
+          username: username,
+          role,
+          email,
+          password,
+        });
+        await newUser.save();
+        const newCompany = new Company({
+          idCompany: newUser._id,
+          companyName,
+          size,
+          city,
+          address,
+          info,
+          contactName,
+          phone,
+          email,
+        });
+        await newCompany.save();
+
+        res.json({ message: "Account has been activated!" });
       }
-
-      const newUser = new Users({
-        firstName,
-        lastName,
-        username,
-        email,
-        password,
-        role,
-      });
-
-      await newUser.save();
-      res.json({ message: "Active Successful!" });
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
@@ -198,7 +246,6 @@ const authController = {
       return res.status(500).json({ message: err.message });
     }
   },
-
   companyRegister: async (req, res) => {
     try {
       const {
@@ -251,6 +298,7 @@ const authController = {
         info,
         contactName,
         phone,
+        email: company_email,
       });
 
       const activation_token = createActiveToken({
@@ -350,6 +398,7 @@ const authController = {
         info,
         contactName,
         phone,
+        email,
       });
       await newCompany.save();
 

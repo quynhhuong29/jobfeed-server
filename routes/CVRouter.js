@@ -7,6 +7,7 @@ router.get("/getAllCV", auth, CVController.getAllCV);
 
 router.patch("/updateCV", auth, CVController.updateCV);
 router.patch("/deleteCV", auth, CVController.deleteCV);
+
 // router.get('/search_job', jobCtrl.searchJob)
 
 module.exports = router;
