@@ -27,13 +27,15 @@ const submitController = {
         name,
         email,
         phone,
+        documentFile,
       } = req.body;
       const oldSubmit = await submit.findOne({ idJob });
 
       if (
-        !oldSubmit.cv.filter(
-          (element) => element.idCandidate === req.user._id
-        )[0]
+        oldSubmit?.cv.filter(
+          (element) =>
+            element.idCandidate.toString() === req.user._id.toString()
+        ).length > 0
       ) {
         return res
           .status(400)
@@ -41,7 +43,7 @@ const submitController = {
       }
       if (oldSubmit) {
         if (!resumeFile) {
-          const arr = oldSubmit.cv.filter((element) => element.idCV === idCV);
+          const arr = oldSubmit?.cv?.filter((element) => element.idCV === idCV);
           if (!arr[0]) {
             await submit.findOneAndUpdate(
               { idJob },
@@ -53,6 +55,7 @@ const submitController = {
                     dateSubmit: dateSubmit,
                     status: "Waiting",
                     dataCV: dataCV,
+                    documentFile: documentFile,
                   },
                 },
               }
@@ -78,6 +81,7 @@ const submitController = {
                   name,
                   email,
                   phone,
+                  documentFile: documentFile,
                 },
               },
             }
@@ -101,6 +105,7 @@ const submitController = {
             name,
             email,
             phone,
+            documentFile: documentFile,
           },
         });
         await newSubmit.save();
@@ -118,6 +123,7 @@ const submitController = {
             dateSubmit: dateSubmit,
             status: "Waiting",
             dataCV: dataCV,
+            documentFile: documentFile,
           },
         });
         await newSubmit.save();
