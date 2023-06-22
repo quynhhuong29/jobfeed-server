@@ -21,7 +21,7 @@ const SocketServer = (socket) => {
     const data = users.find((user) => user.socketId === socket.id);
     if (data) {
       const clients = users.filter((user) =>
-        data.followers.find((item) => item._id === user?.id)
+        data.followers?.find((item) => item._id === user?.id)
       );
 
       if (clients.length > 0) {
