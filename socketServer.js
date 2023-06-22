@@ -11,9 +11,9 @@ const SocketServer = (socket) => {
   // Connect - Disconnect
   socket.on("joinUser", (user) => {
     users.push({
-      id: user._id,
+      id: user?._id,
       socketId: socket.id,
-      followers: user.followers,
+      followers: user?.followers,
     });
   });
 
@@ -21,7 +21,7 @@ const SocketServer = (socket) => {
     const data = users.find((user) => user.socketId === socket.id);
     if (data) {
       const clients = users.filter((user) =>
-        data.followers.find((item) => item._id === user.id)
+        data.followers.find((item) => item._id === user?.id)
       );
 
       if (clients.length > 0) {
@@ -31,7 +31,7 @@ const SocketServer = (socket) => {
       }
 
       if (data.call) {
-        const callUser = users.find((user) => user.id === data.call);
+        const callUser = users.find((user) => user?.id === data.call);
         if (callUser) {
           users = EditData(users, callUser.id, null);
           socket.to(`${callUser.socketId}`).emit("callerDisconnect");
@@ -44,8 +44,8 @@ const SocketServer = (socket) => {
 
   // Likes
   socket.on("likePost", (newPost) => {
-    const ids = [...newPost.user.followers, newPost.user._id];
-    const clients = users.filter((user) => ids.includes(user.id));
+    const ids = [...newPost.user.followers, newPost.user?._id];
+    const clients = users.filter((user) => ids.includes(user?.id));
 
     if (clients.length > 0) {
       clients.forEach((client) => {
@@ -55,8 +55,8 @@ const SocketServer = (socket) => {
   });
 
   socket.on("unLikePost", (newPost) => {
-    const ids = [...newPost.user.followers, newPost.user._id];
-    const clients = users.filter((user) => ids.includes(user.id));
+    const ids = [...newPost.user?.followers, newPost.user?._id];
+    const clients = users.filter((user) => ids.includes(user?.id));
 
     if (clients.length > 0) {
       clients.forEach((client) => {
@@ -67,8 +67,8 @@ const SocketServer = (socket) => {
 
   // Comments
   socket.on("createComment", (newPost) => {
-    const ids = [...newPost.user.followers, newPost.user._id];
-    const clients = users.filter((user) => ids.includes(user.id));
+    const ids = [...newPost.user?.followers, newPost.user?._id];
+    const clients = users.filter((user) => ids.includes(user?.id));
 
     if (clients.length > 0) {
       clients.forEach((client) => {
@@ -78,8 +78,8 @@ const SocketServer = (socket) => {
   });
 
   socket.on("deleteComment", (newPost) => {
-    const ids = [...newPost.user.followers, newPost.user._id];
-    const clients = users.filter((user) => ids.includes(user.id));
+    const ids = [...newPost.user.followers, newPost.user?._id];
+    const clients = users.filter((user) => ids.includes(user?.id));
 
     if (clients.length > 0) {
       clients.forEach((client) => {
@@ -90,18 +90,19 @@ const SocketServer = (socket) => {
 
   // Follow
   socket.on("follow", (newUser) => {
-    const user = users.find((user) => user.id === newUser._id);
+    const user = users.find((user) => user.id === newUser?._id);
     user && socket.to(`${user.socketId}`).emit("followToClient", newUser);
   });
 
   socket.on("unFollow", (newUser) => {
-    const user = users.find((user) => user.id === newUser._id);
+    const user = users.find((user) => user.id === newUser?._id);
     user && socket.to(`${user.socketId}`).emit("unFollowToClient", newUser);
   });
 
   // Notification
   socket.on("createNotify", (msg) => {
-    const client = users.find((user) => msg.recipients.includes(user.id));
+    const client = users.find((user) => msg.recipients.includes(user?.id));
+    console.log("🚀 ~ file: socketServer.js:105 ~ socket.on ~ client:", client);
     client && socket.to(`${client.socketId}`).emit("createNotifyToClient", msg);
   });
 

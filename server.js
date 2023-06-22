@@ -58,7 +58,6 @@ const io = require("socket.io")(http, {
 });
 
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
   SocketServer(socket);
 });
 
