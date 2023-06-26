@@ -7,7 +7,8 @@ router.get("/getListResume", auth, resumeController.getListResume);
 router.get("/getResumeById/:id", auth, resumeController.getResumeById);
 router.delete("/deleteResumeById/:id", auth, resumeController.deleteResumeById);
 router.post("/findResume", resumeController.findResume);
-router.post("/updateResume", auth, resumeController.uploadResumeFile);
+router.post("/uploadResumeFile", auth, resumeController.uploadResumeFile);
 router.get("/getFileResume", auth, resumeController.getFileResume);
+router.patch("/updateResume", auth, resumeController.updateResume);
 
 module.exports = router;

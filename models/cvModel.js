@@ -21,7 +21,7 @@ const cvSchema = new mongoose.Schema(
     email: {
       type: String,
     },
-    dateofBirth: {
+    dateOfBirth: {
       type: Date,
     },
     images: {

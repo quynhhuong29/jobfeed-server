@@ -50,6 +50,58 @@ const resumeController = {
       return res.json({ msg: error.msg });
     }
   },
+  updateResume: async (req, res) => {
+    try {
+      const {
+        id,
+        title,
+        firstName,
+        lastName,
+        phone,
+        DOB,
+        country,
+        language,
+        email,
+        city,
+        address,
+        overview,
+        workExperience,
+        skill,
+        education,
+        hobbies,
+        avatar,
+        linkedin,
+        tags,
+      } = req.body;
+      await Resume.findOneAndUpdate(
+        { _id: id },
+        {
+          title,
+          firstName,
+          lastName,
+          phone,
+          DOB,
+          country,
+          language,
+          email,
+          city,
+          address,
+          overview,
+          workExperience,
+          skill,
+          education,
+          hobbies,
+          avatar,
+          idCandidate: req.user._id,
+          linkedin,
+          tags,
+        }
+      );
+      return res.status(200).json({ msg: "Update success" });
+    } catch (error) {
+      return res.status(500).json({ msg: error.msg });
+    }
+  },
   getListResume: async (req, res) => {
     try {
       const resumes = await Resume.find({ idCandidate: req.user._id });
@@ -71,7 +123,8 @@ const resumeController = {
     try {
       const { id } = req.params;
       const resume = await Resume.findOneAndDelete({ _id: id });
-      return res.json({ msg: "Delete success" });
+
+      return res.status(200).json({ msg: "Delete success" });
     } catch (error) {
       return res.json({ msg: error.msg });
     }
