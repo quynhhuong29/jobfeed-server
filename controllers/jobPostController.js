@@ -177,28 +177,64 @@ const jobPostController = {
   },
   searchJob: async (req, res) => {
     try {
-      const { search } = req.query;
+      const { search, workingLocation, industry } = req.query;
+
+      let jobs = [];
+      let jobsWorkingLocation = [];
+      let jobsIndustry = [];
 
       if (search) {
-        const jobs = await JobPost.find({
-          job_title: { $regex: search, $options: "i" },
+        const searchRegex = new RegExp(search, "i");
+        jobs = await JobPost.find({
+          job_title: searchRegex,
         })
           .populate({ path: "company_info" })
           .sort("-createdAt");
-        // const jobs2 = await JobPost.find({ skill: { $elemMatch: { title: { $regex: req.query.position, $options: 'i' } } } })
+
         const company = await Company.findOne({
-          companyName: { $regex: search, $options: "i" },
+          companyName: searchRegex,
         });
+
         if (company) {
-          const jobs2 = await JobPost.find({ company_info: company._id })
+          const jobsByCompany = await JobPost.find({
+            company_info: company._id,
+          })
             .populate({ path: "company_info" })
             .sort("-createdAt");
-          if (jobs2.length > 0) return res.json([...jobs2]);
-        }
 
-        return res.json([...jobs]);
+          jobs = jobs.concat(jobsByCompany);
+        }
       }
-      return res.json({ msg: "Not exitst" });
+
+      if (workingLocation) {
+        const locationRegex = new RegExp(workingLocation, "i");
+        jobsWorkingLocation = await JobPost.find({
+          working_location: locationRegex,
+        })
+          .populate({ path: "company_info" })
+          .sort("-createdAt");
+      }
+
+      if (industry) {
+        jobsIndustry = await JobPost.find({
+          industry: industry,
+        })
+          .populate({ path: "company_info" })
+          .sort("-createdAt");
+      }
+
+      const uniqueJobs = new Set([
+        ...jobs,
+        ...jobsWorkingLocation,
+        ...jobsIndustry,
+      ]);
+      const uniqueJobPosts = Array.from(uniqueJobs);
+
+      if (uniqueJobPosts.length > 0) {
+        return res.json(uniqueJobPosts);
+      } else {
+        return res.json({ msg: "Not exist" });
+      }
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
