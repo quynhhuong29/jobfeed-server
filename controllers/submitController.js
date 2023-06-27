@@ -138,7 +138,7 @@ const submitController = {
   },
   getSubmitted: async (req, res) => {
     try {
-      const submited = await submit
+      const submitted = await submit
         .find({ cv: { $elemMatch: { idCandidate: req.user._id } } })
         .populate({
           path: "idJob",
@@ -146,10 +146,17 @@ const submitController = {
             path: "company_info",
           },
         });
-
-      res.json(submited);
+      const modifiedSubmitted = submitted.map((item) => {
+        return {
+          ...item._doc,
+          jobInfo: item._doc.idJob,
+          // Remove the original property if needed
+          idJob: undefined,
+        };
+      });
+      res.json(modifiedSubmitted);
     } catch (err) {
-      return res.json({ msg: err.message });
+      return res.json({ message: err.message });
     }
   },
   getSubmittedForCompany: async (req, res) => {
