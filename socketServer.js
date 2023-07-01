@@ -120,7 +120,7 @@ const SocketServer = (socket) => {
   // Check User Online / Offline
   socket.on("checkUserOnline", (data) => {
     const following = users.filter((user) =>
-      data.following.find((item) => item._id === user.id)
+      data?.following?.find((item) => item._id === user.id)
     );
     socket.emit("checkUserOnlineToMe", following);
 

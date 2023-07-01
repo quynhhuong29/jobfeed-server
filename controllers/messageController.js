@@ -66,7 +66,7 @@ const messageController = {
 
       const conversations = await features.query
         .sort("-updatedAt")
-        .populate("recipients", "avatar firstname lastname role");
+        .populate("recipients", "avatar firstName lastName role");
 
       res.json({
         conversations,
