@@ -436,7 +436,7 @@ const authController = {
 
 const createActiveToken = (payload) => {
   return jwt.sign(payload, process.env.ACTIVE_TOKEN_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "5m",
   });
 };
 

@@ -51,7 +51,11 @@ mongoose.connect(URI, {
 const http = require("http").createServer(app);
 const io = require("socket.io")(http, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3005"],
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3005",
+      "https://jobvia.vercel.app",
+    ],
     allowedHeaders: ["*"],
     credentials: true,
   },
