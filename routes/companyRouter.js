@@ -4,7 +4,7 @@ const companyController = require("../controllers/companyController");
 const authCompany = require("../middleware/authCompany");
 const authAdmin = require("../middleware/authAdmin");
 
-router.get("/getInfoCompany/:id", auth, companyController.getInfoCompany);
+router.get("/getInfoCompany/:id", companyController.getInfoCompany);
 router.get("/getTopCompany", companyController.getTopCompany);
 // router.get(
 //   "/getInfoCompany:id",

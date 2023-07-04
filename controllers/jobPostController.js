@@ -223,15 +223,25 @@ const jobPostController = {
           .sort("-createdAt");
       }
 
-      const uniqueJobs = new Set([
-        ...jobs,
-        ...jobsWorkingLocation,
-        ...jobsIndustry,
-      ]);
-      const uniqueJobPosts = Array.from(uniqueJobs);
+      if (!search && !workingLocation && !industry) {
+        jobs = await JobPost.find()
+          .populate({ path: "company_info" })
+          .sort("-createdAt");
+      }
 
-      if (uniqueJobPosts.length > 0) {
-        return res.json(uniqueJobPosts);
+      const uniqueJobs = Array.from(
+        new Set([...jobs, ...jobsWorkingLocation, ...jobsIndustry])
+      );
+      const uniqueObjects = uniqueJobs.filter(
+        (currentObject, index, self) =>
+          index ===
+          self.findIndex(
+            (obj) => obj._id.toString() === currentObject._id.toString()
+          )
+      );
+
+      if (uniqueObjects.length > 0) {
+        return res.json(uniqueObjects);
       } else {
         return res.json({ msg: "Not exist" });
       }
