@@ -81,7 +81,10 @@ const jobPostController = {
       } else {
         const jobs = await JobPost.find({
           expiring_date: { $gt: currentDate },
-        }).populate("company_info", "_id companyName logo address");
+        }).populate(
+          "company_info",
+          "_id companyName logo address working_location"
+        );
         return res.json({ jobs, total: jobs.length });
       }
     } catch (error) {
