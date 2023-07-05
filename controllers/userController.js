@@ -18,7 +18,9 @@ const userController = {
   },
   getUser: async (req, res) => {
     try {
-      const user = await Users.findById(req.params.id).select("-password");
+      const user = await Users.findById(req.params.id)
+        .select("-password")
+        .populate("followers following", "-password");
 
       if (!user) return res.status(400).json({ msg: "User does not exist." });
 
