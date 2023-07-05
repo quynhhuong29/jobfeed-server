@@ -19,16 +19,6 @@ const sendMail = async (email, url, username) => {
   try {
     const accessToken = await oAuth2Client.getAccessToken();
     const transport = nodemailer.createTransport({
-      // service: "gmail",
-      // auth: {
-      //   type: "OAuth2",
-      //   user: SENDER_MAIL, // email sender
-      //   pass: "uzgfuszitijmcpob",
-      //   clientId: CLIENT_ID,
-      //   clientSecret: CLIENT_SECRET,
-      //   refreshToken: REFRESH_TOKEN,
-      //   accessToken: accessToken,
-      // },
       host: mailHost,
       port: mailPort,
       secure: false,
@@ -232,8 +222,10 @@ const sendMail = async (email, url, username) => {
     let info = await transport.sendMail(mailOptions);
 
     console.log(info);
+    return info;
   } catch (err) {
     console.error(err);
+    return err;
   }
 };
 

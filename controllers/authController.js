@@ -5,7 +5,12 @@ const jwt = require("jsonwebtoken");
 const { sendMail } = require("../helpers/emailHelper");
 require("dotenv").config();
 
-const { CLIENT_URL, ACTIVE_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
+const {
+  CLIENT_URL,
+  PRODUCTION_URL,
+  ACTIVE_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+} = process.env;
 
 const authController = {
   register: async (req, res) => {
@@ -42,7 +47,12 @@ const authController = {
       });
 
       const verifyToken = createActiveToken({ ...newUser._doc });
-      const url = `${CLIENT_URL}/verify?verifiedToken=${verifyToken}`;
+      let url;
+      if (process.env.NODE_ENV === "production") {
+        url = `${PRODUCTION_URL}/verify?verifiedToken=${verifyToken}`;
+      } else {
+        url = `${CLIENT_URL}/verify?verifiedToken=${verifyToken}`;
+      }
       sendMail(email, url, newUsername);
       res.json({
         message:
