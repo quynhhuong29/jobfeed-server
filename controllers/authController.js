@@ -230,8 +230,13 @@ const authController = {
         return res.status(400).json({ message: "This email does not exist." });
 
       const access_token = createAccessToken({ id: user._id });
-      const url = `${CLIENT_URL}/reset/${access_token}`;
-
+      // const url = `${CLIENT_URL}/reset/${access_token}`;
+      let url;
+      if (process.env.NODE_ENV === "production") {
+        url = `${PRODUCTION_URL}/reset/${access_token}`;
+      } else {
+        url = `${CLIENT_URL}/reset/${access_token}`;
+      }
       sendMail(email, url, user.username);
       res.json({ message: "Re-send the password, please check your email." });
     } catch (err) {
@@ -315,7 +320,13 @@ const authController = {
         ...newCompany._doc,
         ...newUser._doc,
       });
-      const url = `${CLIENT_URL}/verify?verifiedToken=${activation_token}`;
+
+      let url;
+      if (process.env.NODE_ENV === "production") {
+        url = `${PRODUCTION_URL}/verify?verifiedToken=${verifyToken}`;
+      } else {
+        url = `${CLIENT_URL}/verify?verifiedToken=${verifyToken}`;
+      }
       sendMail(email, url, newUser.username);
       res.json({
         message: "Register Success! Please activate your email to start.",
