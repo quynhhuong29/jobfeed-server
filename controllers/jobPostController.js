@@ -1,5 +1,6 @@
 const JobPost = require("../models/jobPostModel");
 const Company = require("../models/companyModel");
+const Industry = require("../models/IndustryModel");
 
 const jobPostController = {
   createJob: async (req, res) => {
@@ -183,68 +184,38 @@ const jobPostController = {
       const { search, workingLocation, industry } = req.query;
 
       let jobs = [];
-      let jobsWorkingLocation = [];
-      let jobsIndustry = [];
+
+      const conditions = {};
 
       if (search) {
         const searchRegex = new RegExp(search, "i");
-        jobs = await JobPost.find({
-          job_title: searchRegex,
-        })
-          .populate({ path: "company_info" })
-          .sort("-createdAt");
-
-        const company = await Company.findOne({
-          companyName: searchRegex,
-        });
-
-        if (company) {
-          const jobsByCompany = await JobPost.find({
-            company_info: company._id,
-          })
-            .populate({ path: "company_info" })
-            .sort("-createdAt");
-
-          jobs = jobs.concat(jobsByCompany);
-        }
+        conditions.$or = [
+          { job_title: searchRegex },
+          { companyName: searchRegex },
+        ];
       }
 
       if (workingLocation) {
         const locationRegex = new RegExp(workingLocation, "i");
-        jobsWorkingLocation = await JobPost.find({
-          working_location: locationRegex,
-        })
-          .populate({ path: "company_info" })
-          .sort("-createdAt");
+        conditions.working_location = locationRegex;
       }
 
       if (industry) {
-        jobsIndustry = await JobPost.find({
-          industry: industry,
-        })
-          .populate({ path: "company_info" })
-          .sort("-createdAt");
+        conditions.industry = industry;
       }
 
-      if (!search && !workingLocation && !industry) {
+      if (Object.keys(conditions).length === 0) {
         jobs = await JobPost.find()
           .populate({ path: "company_info" })
           .sort("-createdAt");
+      } else {
+        jobs = await JobPost.find(conditions)
+          .populate({ path: "company_info" })
+          .sort("-createdAt");
       }
 
-      const uniqueJobs = Array.from(
-        new Set([...jobs, ...jobsWorkingLocation, ...jobsIndustry])
-      );
-      const uniqueObjects = uniqueJobs.filter(
-        (currentObject, index, self) =>
-          index ===
-          self.findIndex(
-            (obj) => obj._id.toString() === currentObject._id.toString()
-          )
-      );
-
-      if (uniqueObjects.length > 0) {
-        return res.json(uniqueObjects);
+      if (jobs.length > 0) {
+        return res.json(jobs);
       } else {
         return res.json({ msg: "Not exist" });
       }
@@ -301,6 +272,74 @@ const jobPostController = {
       ]);
     } catch (error) {
       return res.status(500).json({ msg: error.message });
+    }
+  },
+  getJobsLatest: async (req, res) => {
+    try {
+      const latestJobPosts = await JobPost.find()
+        .populate(
+          "company_info",
+          "_id companyName logo address working_location"
+        )
+        .sort({ createdAt: -1 }) // Sắp xếp theo thời gian tạo giảm dần
+        .limit(4);
+
+      res.json(latestJobPosts);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách jobPost mới nhất:", error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+  countByEmploymentType: async (req, res) => {
+    try {
+      const jobCounts = await JobPost.aggregate([
+        {
+          $group: {
+            _id: "$employment_type",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+
+      const result = {};
+      jobCounts.forEach((item) => {
+        result[item._id] = item.count;
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error(
+        "Lỗi khi đếm số lượng job của từng employment_type:",
+        error
+      );
+      res.status(500).json({ error: "Đã xảy ra lỗi" });
+    }
+  },
+  countJobsByIndustry: async (req, res) => {
+    try {
+      const industryCounts = await JobPost.aggregate([
+        {
+          $group: {
+            _id: "$industry",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: {
+            count: -1,
+          },
+        },
+      ]);
+
+      const result = await Industry.populate(industryCounts, { path: "_id" });
+      const transformedResult = result.map((item) => ({
+        industry_info: item._id,
+        count: item.count,
+      }));
+      res.json(transformedResult);
+    } catch (error) {
+      console.error("Lỗi khi đếm số lượng công việc theo ngành:", error);
+      res.status(500).json({ error: "Đã xảy ra lỗi" });
     }
   },
 };

@@ -12,4 +12,7 @@ router.get("/searchJobPost", jobPostController.searchJob);
 router.post("/getJobSaved", jobPostController.getJobSaved);
 router.get("/dataChartJobType/:id", jobPostController.getDataChartPie);
 
+router.get("/latest", jobPostController.getJobsLatest);
+router.get("/countJobsByIndustry", jobPostController.countJobsByIndustry);
+
 module.exports = router;
