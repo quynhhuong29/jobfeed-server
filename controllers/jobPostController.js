@@ -29,7 +29,12 @@ const jobPostController = {
       } = req.body;
       if (!company_id)
         return res.status(400).json({ msg: "Missing id company" });
-
+      if (!job_title) return res.status(400).json({ msg: "Missing job title" });
+      if (!industry) return res.status(400).json({ msg: "Missing industry" });
+      if (experience?.isRequired === true) {
+        if (!experience?.from || !experience?.to)
+          return res.status(400).json({ msg: "Missing experience" });
+      }
       const newJob = new JobPost({
         job_title,
         job_description,
