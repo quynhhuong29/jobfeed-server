@@ -14,7 +14,7 @@ router.get("/getTopCompany", companyController.getTopCompany);
 // );
 router.get("/getAllCompany", companyController.getAllCompany);
 router.post("/getCompanyByIndustry", companyController.getCompanyByIndustry);
-router.patch(
+router.put(
   "/updateInfoCompany",
   auth,
   authCompany,
@@ -22,6 +22,6 @@ router.patch(
 );
 router.post("/deleteCompany", auth, authAdmin, companyController.deleteCompany);
 router.get("/getInfoCompanyById/:id", companyController.getInfoCompanyById);
-router.post("/updateInfoCompany", auth, companyController.updateCompany);
+// router.post("/updateInfoCompany", auth, companyController.updateInfoCompany);
 
 module.exports = router;

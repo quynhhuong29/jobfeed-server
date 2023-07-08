@@ -6,6 +6,8 @@ const JobPost = require("../models/jobPostModel");
 const companyController = {
   getInfoCompany: async (req, res) => {
     try {
+      if (!req.params.id)
+        return res.status(400).json({ msg: "Id is required" });
       const company = await Company.find({ idCompany: req.params.id });
       return res.status(200).json(company);
     } catch (err) {
@@ -40,9 +42,14 @@ const companyController = {
         logo,
         email,
         website,
-        phoneNumber,
+        phone,
         taxCode,
+        industry,
+        city,
       } = req.body;
+
+      if (!companyName)
+        return res.status(400).json({ msg: "Company name is required" });
 
       await Company.findOneAndUpdate(
         { idCompany: req.user.id },
@@ -52,10 +59,25 @@ const companyController = {
           info,
           companySize,
           logo,
-          website,
-          phoneNumber,
           email,
+          website,
+          phone,
           taxCode,
+          industry,
+          city,
+        }
+      );
+
+      await Users.findOneAndUpdate(
+        {
+          _id: req.user.id,
+        },
+        {
+          firstName: companyName,
+          lastName: companyName,
+          avatar: logo,
+          introduction: info,
+          website: website,
         }
       );
       res.json({ msg: "Update Success!" });
@@ -109,19 +131,6 @@ const companyController = {
       return res.json(company);
     } catch (error) {
       return res.json({ msg: "Error server" });
-    }
-  },
-  updateCompany: async (req, res) => {
-    try {
-      const { industry, website, info, city, address, contactName, logo } =
-        req.body;
-      await Company.findOneAndUpdate(
-        { idCompany: req.user._id },
-        { industry, website, info, city, address, contactName, logo }
-      );
-      return res.json({ msg: "Update success!" });
-    } catch (error) {
-      return res.json({ msg: "Update fail!" });
     }
   },
 };
