@@ -45,7 +45,7 @@ const submitController = {
         if (!resumeFile) {
           const arr = oldSubmit?.cv?.filter((element) => element.idCV === idCV);
           if (!arr[0]) {
-            await submit.findOneAndUpdate(
+            const newSubmit = await submit.findOneAndUpdate(
               { idJob },
               {
                 $push: {
@@ -62,14 +62,14 @@ const submitController = {
             );
 
             return res.status(200).json({
-              newSubmit: { idCompany, idCV, idJob },
+              newSubmit: { ...newSubmit._doc, user: req.user },
               msg: "submit success!",
             });
           } else {
             return res.status(400).json({ msg: "Your CV has been submitted" });
           }
         } else {
-          await submit.findOneAndUpdate(
+          const newSubmit = await submit.findOneAndUpdate(
             { idJob },
             {
               $push: {
@@ -87,7 +87,7 @@ const submitController = {
             }
           );
           return res.status(200).json({
-            newSubmit: { idCompany, idCV, idJob },
+            newSubmit: { ...newSubmit._doc, user: req.user },
             msg: "submit success!",
           });
         }

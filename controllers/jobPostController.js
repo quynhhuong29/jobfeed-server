@@ -77,7 +77,7 @@ const jobPostController = {
         const jobs = await JobPost.find({ expiring_date: { $gt: currentDate } })
           .populate(
             "company_info",
-            "_id companyName logo address working_location"
+            "_id companyName logo address idCompany working_location"
           )
           .sort("-createdAt")
           .limit(Number(limit))
@@ -104,7 +104,7 @@ const jobPostController = {
 
       const jobs = await JobPost.find({ company_info: company._id })
         .populate("industry", "title description")
-        .populate("company_info", "_id companyName logo address")
+        .populate("company_info", "_id companyName logo address idCompany")
         .sort("-createdAt");
       return res.json(jobs);
     } catch (error) {
