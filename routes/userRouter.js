@@ -7,6 +7,12 @@ const userController = require("../controllers/userController");
 router.get("/search", userController.searchUser);
 router.get("/user/:id", auth, userController.getUser);
 router.patch("/user", auth, userController.updateUser);
+router.patch(
+  "/updateUserInfo",
+  auth,
+  authAdmin,
+  userController.updateUserAdmin
+);
 
 // Get all users
 router.get("/users", auth, authAdmin, userController.getUserAll);

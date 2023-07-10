@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const auth = require("../middleware/auth");
+const authAdmin = require("../middleware/authAdmin");
 const postController = require("../controllers/postController");
 
 router.route("/post").post(auth, postController.createPost);
@@ -22,4 +23,8 @@ router.get("/post_discover", auth, postController.getPostsDicover);
 router.patch("/savePost/:id", auth, postController.savePost);
 router.patch("/unSavePost/:id", auth, postController.unSavePost);
 router.get("/getSavePosts", auth, postController.getSavePosts);
+
+router.get("/getAllPosts", auth, authAdmin, postController.getAllPosts);
+router.delete("/delete/:id", auth, authAdmin, postController.deletePostAdmin);
+
 module.exports = router;

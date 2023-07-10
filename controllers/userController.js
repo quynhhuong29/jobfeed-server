@@ -274,23 +274,62 @@ const userController = {
     const { _id, role } = req.body.data;
     try {
       const user = await Users.findOneAndUpdate({ _id: _id }, { role: role });
-      return res.json({ user, msg: "Update successfull" });
+      return res.json({ user, msg: "Update successful" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   deleteUser: async (req, res) => {
-    const { _id, role } = req.body.data;
+    const { _id, role } = req.body;
+
     if (_id !== req.user._id) {
       try {
         const user = await Users.findOneAndDelete({ _id: _id });
         if (role === "company")
           await Company.findOneAndDelete({ idCompany: _id });
-        return res.json({ user, msg: "Delete successfull" });
+        return res.status(200).json({ user, msg: "Delete successful" });
       } catch (err) {
         return res.status(500).json({ msg: err.message });
       }
-    } else return res.json({ msg: "Dont delete yourself" });
+    } else return res.json({ msg: "Don't delete yourself" });
+  },
+  updateUserAdmin: async (req, res) => {
+    try {
+      const {
+        _id,
+        avatar,
+        firstName,
+        lastName,
+        mobile,
+        address,
+        introduction,
+        website,
+        gender,
+      } = req.body;
+
+      if (!firstName || !lastName)
+        return res
+          .status(400)
+          .json({ msg: "Please add your firstName and lastName" });
+
+      await Users.findOneAndUpdate(
+        { _id: _id },
+        {
+          avatar,
+          firstName,
+          lastName,
+          mobile,
+          address,
+          introduction,
+          website,
+          gender,
+        }
+      );
+
+      res.json({ msg: "Update Success!" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
   },
 };
 

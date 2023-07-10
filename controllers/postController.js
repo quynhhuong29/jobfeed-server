@@ -315,6 +315,44 @@ const postController = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  getAllPosts: async (req, res) => {
+    try {
+      const posts = await Posts.find()
+        .populate("user", "avatar username firstName lastName _id")
+        .populate(
+          "user likes",
+          "avatar username firstName lastName followers role"
+        )
+        .populate({
+          path: "comments",
+          populate: {
+            path: "user likes",
+            select: "-password",
+          },
+        });
+      if (!posts) return res.status(400).json({ msg: "Can't get posts" });
+
+      res.json({ posts });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  deletePostAdmin: async (req, res) => {
+    try {
+      const post = await Posts.findOneAndDelete({
+        _id: req.params.id,
+      });
+
+      if (!post) res.status(400).json({ msg: "This post does not exist." });
+      await Comments.deleteMany({ _id: { $in: post.comments } });
+
+      res.status(200).json({
+        msg: "Deleted Post!",
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
 };
 
 module.exports = postController;
